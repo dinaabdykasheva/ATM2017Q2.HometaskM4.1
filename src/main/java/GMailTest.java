@@ -46,6 +46,8 @@ public class GMailTest {
         driver.findElement(By.xpath(".//textarea[@aria-label='Кому']")).sendKeys("dina_abdykasheva@mail.ru");
         driver.findElement(By.name("subjectbox")).sendKeys("mentoring task");
         driver.findElement(By.xpath(".//div[@role='textbox']")).sendKeys("body text");
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(".//span[@class = 'oG aOy']")));
         driver.findElement(By.xpath(".//img[@alt='Закрыть']")).click();
         driver.findElement(By.xpath(".//a[contains(text(), 'Черновики')]")).click();
         Assert.assertTrue(driver.findElement(By.xpath(".//span[contains(text(), 'mentoring task')]")).isDisplayed(), "Mail wasn't saved to draft");
@@ -59,20 +61,22 @@ public class GMailTest {
         Assert.assertEquals(receiver, "dina_abdykasheva@mail.ru", "Receiver is invalid");
         String subject = driver.findElement(By.name("subjectbox")).getAttribute("value");
         Assert.assertEquals(subject, "mentoring task", "Subject is invalid");
-        //String body = driver.findElement(By.xpath(".//div[@role='textbox']")).getText();
-        //Assert.assertEquals(body, "body text", "Body is invalid");
+        String body = driver.findElement(By.xpath(".//div[@role='textbox']")).getText();
+        Assert.assertEquals(body, "body text", "Body is invalid");
     }
 
     @Test(description = "isMailDeletedFromDraftsAfterSent", priority = 3)
     public void isMailDeletedFromDraftsAfterSent() {
         WebDriverWait wait = new WebDriverWait(driver, 20);
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(".//div[@class = 'T-I J-J5-Ji aoO T-I-atl L3 T-I-JW']"))).click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(".//div[contains(text(), 'Отправить')]"))).click();
         driver.findElement(By.xpath(".//a[contains(text(), 'Черновики')]")).click();
         Assert.assertFalse(driver.findElement(By.xpath(".//span[contains(text(), 'mentoring task')]")).isDisplayed(), "Mail wasn't deleted from drafts");
     }
 
     @Test(description = "isMailSentTest", priority = 4)
     public void isMailSentTest() {
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(".//div[contains(text(), 'Письмо отправлено')]")));
         driver.findElement(By.xpath(".//a[contains(text(), 'Отправленные')]")).click();
         Assert.assertTrue(driver.findElement(By.xpath(".//span[contains(text(), 'mentoring task')]")).isDisplayed(), "Mail wasn't sent");
     }
